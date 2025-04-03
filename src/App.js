@@ -53,28 +53,29 @@ function Home() {
   const calculateArtTransform = () => {
     const viewingSpace = 1000; // Space to just view the image
     const animationSpace = 1000; // Space for the scaling animation
-    const totalScroll = viewingSpace + animationSpace;
     const isMobile = window.innerWidth <= 768;
 
     // Don't start scaling until after viewingSpace
     if (scrollPosition <= viewingSpace) {
-      // Adjust initial scale for mobile
       return {
         transform: `scale(${isMobile ? 0.7 : 1})`,
         opacity: 1
       };
     }
 
-    // Calculate progress only for the animation portion
-    const progress = Math.min((scrollPosition - viewingSpace) / animationSpace, 1);
+    // Calculate progress only for the animation portion, capped at 1
+    const rawProgress = (scrollPosition - viewingSpace) / animationSpace;
+    const progress = Math.min(Math.max(rawProgress, 0), 1); // Clamp between 0 and 1
 
-    // Different scaling for mobile and desktop
+    // Different scaling for mobile and desktop with smoother easing
     const scale = isMobile
-      ? 0.56 - (progress * 0.16) // Mobile: Start at 0.7, end at 0.45 (adjusted for new layout)
+      ? 0.7 - (easeOutCubic(progress) * 0.16) // Smooth easing for mobile
       : 1 - (progress * 0.55); // Desktop: Unchanged
 
-    // Adjust vertical offset for mobile - adjusted for new text spacing
-    const yOffset = isMobile ? progress * 73 : progress * 10.5;
+    // Smooth vertical movement for mobile
+    const yOffset = isMobile
+      ? easeOutCubic(progress) * 73 // Smooth easing for mobile
+      : progress * 10.5;
 
     return {
       transform: `scale(${scale}) translateY(${yOffset}vh)`,
@@ -82,9 +83,14 @@ function Home() {
     };
   };
 
+  // Smooth easing function
+  const easeOutCubic = (x) => {
+    return 1 - Math.pow(1 - x, 3);
+  };
+
   return (
     <>
-      <div className="min-h-[300vh] bg-black">
+      <div className="min-h-[200vh] md:min-h-[300vh] bg-black"> {/* Reduced scroll space on mobile */}
         {/* First Section - Envelope */}
         <div
           className={`min-h-screen flex items-center justify-center relative transition-all duration-[1500ms] ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0'
