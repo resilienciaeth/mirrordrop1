@@ -151,7 +151,7 @@ function Home() {
               style={calculateArtTransform()}
             >
               <img
-                src="/assets/art.jpeg"
+                src="/assets/art.JPEG"
                 alt="Artwork"
                 className="w-full h-auto object-cover"
               />
@@ -161,17 +161,17 @@ function Home() {
       </div>
 
       {/* Fixed Button */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+      <div className="fixed bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] md:w-auto">
         <button
-          className="group relative px-8 py-4 bg-black/80 backdrop-blur-md rounded-full border border-white/10 
+          className="group relative w-full md:w-auto px-4 md:px-8 py-3 md:py-4 bg-black/80 backdrop-blur-md rounded-full border border-white/10 
                      text-white hover:bg-black/90 transition-all duration-300
-                     flex items-center gap-2"
+                     flex items-center justify-center md:justify-start gap-2"
         >
-          <span className="relative z-10 text-sm font-light tracking-wide">
+          <span className="relative z-10 text-xs md:text-sm font-light tracking-wide">
             1/100 Mirrors <span className="underline underline-offset-4">Claimed</span>. Acquire <span className="underline underline-offset-4">Yours</span>
           </span>
           <svg
-            className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+            className="w-3 h-3 md:w-4 md:h-4 transition-transform duration-300 group-hover:translate-x-1"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
