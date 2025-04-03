@@ -10,7 +10,9 @@ function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const artRef = useRef(null);
+  const videoRef = useRef(null);
   const ticking = useRef(false);
+  const isMobile = window.innerWidth <= 768;
 
   const handleEnvelopeClick = () => {
     if (!isAnimating) {
@@ -39,16 +41,29 @@ function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Throttled scroll handler
+  // Throttled scroll handler with video control for mobile
   const handleScroll = useCallback(() => {
     if (!ticking.current) {
       window.requestAnimationFrame(() => {
-        setScrollPosition(window.scrollY);
+        const position = window.scrollY;
+        setScrollPosition(position);
+
+        // Control video playback on mobile
+        if (isMobile && videoRef.current) {
+          const viewingSpace = 1000;
+          const animationSpace = 1000;
+          const progress = Math.min(Math.max((position - viewingSpace) / animationSpace, 0), 1);
+
+          // Calculate video time based on scroll progress
+          const videoDuration = videoRef.current.duration || 1;
+          videoRef.current.currentTime = progress * videoDuration;
+        }
+
         ticking.current = false;
       });
       ticking.current = true;
     }
-  }, []);
+  }, [isMobile]);
 
   // Handle scroll effect with passive listener
   useEffect(() => {
@@ -56,15 +71,20 @@ function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
-  // Calculate art transform with memoized values
+  // Calculate art transform (now only for desktop)
   const calculateArtTransform = useCallback(() => {
+    if (isMobile) {
+      return {
+        opacity: 0 // Hide the transform-based art on mobile
+      };
+    }
+
     const viewingSpace = 1000;
     const animationSpace = 1000;
-    const isMobile = window.innerWidth <= 768;
 
     if (scrollPosition <= viewingSpace) {
       return {
-        transform: `translate3d(0, 0, 0) scale(${isMobile ? 0.7 : 1})`,
+        transform: `translate3d(0, 0, 0) scale(1)`,
         opacity: 1,
         willChange: 'transform'
       };
@@ -72,21 +92,15 @@ function Home() {
 
     const rawProgress = (scrollPosition - viewingSpace) / animationSpace;
     const progress = Math.min(Math.max(rawProgress, 0), 1);
-
-    const scale = isMobile
-      ? 0.7 - (easeOutCubic(progress) * 0.16)
-      : 1 - (progress * 0.55);
-
-    const yOffset = isMobile
-      ? easeOutCubic(progress) * 73
-      : progress * 10.5;
+    const scale = 1 - (progress * 0.55);
+    const yOffset = progress * 10.5;
 
     return {
       transform: `translate3d(0, ${yOffset}vh, 0) scale(${scale})`,
       opacity: 1,
       willChange: 'transform'
     };
-  }, [scrollPosition]);
+  }, [scrollPosition, isMobile]);
 
   // Smooth easing function
   const easeOutCubic = (x) => {
@@ -138,10 +152,10 @@ function Home() {
           </div>
         </div>
 
-        {/* Art Section with optimized transforms */}
+        {/* Art Section with video for mobile */}
         <div className="min-h-[200vh]">
           <div className="h-screen sticky top-0 flex items-start justify-center overflow-hidden">
-            {/* Frame Image with hardware acceleration */}
+            {/* Frame Image */}
             <div
               className="absolute z-10 w-full max-w-3xl md:max-w-3xl flex items-center justify-center opacity-0 transition-opacity duration-500 transform-gpu"
               style={{
@@ -158,7 +172,24 @@ function Home() {
               />
             </div>
 
-            {/* Art Image with hardware acceleration */}
+            {/* Mobile Video Animation */}
+            {isMobile && (
+              <div className="absolute z-20 w-full h-full">
+                <video
+                  ref={videoRef}
+                  className="w-full h-full object-cover"
+                  src="/assets/video.mov"
+                  playsInline
+                  muted
+                  preload="auto"
+                  style={{
+                    objectFit: 'contain'
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Desktop Transform Animation */}
             <div
               ref={artRef}
               className="absolute z-20 w-full max-w-[90vh] md:max-w-[90vh] transition-all duration-100 transform-gpu"
