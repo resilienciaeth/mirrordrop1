@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -10,6 +10,7 @@ function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const artRef = useRef(null);
+  const ticking = useRef(false);
 
   const handleEnvelopeClick = () => {
     if (!isAnimating) {
@@ -38,50 +39,54 @@ function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Handle scroll effect
-  useEffect(() => {
-    const handleScroll = () => {
-      const position = window.scrollY;
-      setScrollPosition(position);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+  // Throttled scroll handler
+  const handleScroll = useCallback(() => {
+    if (!ticking.current) {
+      window.requestAnimationFrame(() => {
+        setScrollPosition(window.scrollY);
+        ticking.current = false;
+      });
+      ticking.current = true;
+    }
   }, []);
 
-  // Calculate art scale and position based on scroll
-  const calculateArtTransform = () => {
-    const viewingSpace = 1000; // Space to just view the image
-    const animationSpace = 1000; // Space for the scaling animation
+  // Handle scroll effect with passive listener
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
+
+  // Calculate art transform with memoized values
+  const calculateArtTransform = useCallback(() => {
+    const viewingSpace = 1000;
+    const animationSpace = 1000;
     const isMobile = window.innerWidth <= 768;
 
-    // Don't start scaling until after viewingSpace
     if (scrollPosition <= viewingSpace) {
       return {
-        transform: `scale(${isMobile ? 0.7 : 1})`,
-        opacity: 1
+        transform: `translate3d(0, 0, 0) scale(${isMobile ? 0.7 : 1})`,
+        opacity: 1,
+        willChange: 'transform'
       };
     }
 
-    // Calculate progress only for the animation portion, capped at 1
     const rawProgress = (scrollPosition - viewingSpace) / animationSpace;
-    const progress = Math.min(Math.max(rawProgress, 0), 1); // Clamp between 0 and 1
+    const progress = Math.min(Math.max(rawProgress, 0), 1);
 
-    // Different scaling for mobile and desktop with smoother easing
     const scale = isMobile
-      ? 0.7 - (easeOutCubic(progress) * 0.16) // Smooth easing for mobile
-      : 1 - (progress * 0.55); // Desktop: Unchanged
+      ? 0.7 - (easeOutCubic(progress) * 0.16)
+      : 1 - (progress * 0.55);
 
-    // Smooth vertical movement for mobile
     const yOffset = isMobile
-      ? easeOutCubic(progress) * 73 // Smooth easing for mobile
+      ? easeOutCubic(progress) * 73
       : progress * 10.5;
 
     return {
-      transform: `scale(${scale}) translateY(${yOffset}vh)`,
-      opacity: 1
+      transform: `translate3d(0, ${yOffset}vh, 0) scale(${scale})`,
+      opacity: 1,
+      willChange: 'transform'
     };
-  };
+  }, [scrollPosition]);
 
   // Smooth easing function
   const easeOutCubic = (x) => {
@@ -90,7 +95,7 @@ function Home() {
 
   return (
     <>
-      <div className="min-h-[200vh] md:min-h-[300vh] bg-black"> {/* Reduced scroll space on mobile */}
+      <div className="min-h-[200vh] md:min-h-[300vh] bg-black will-change-scroll">
         {/* First Section - Envelope */}
         <div
           className={`min-h-screen flex items-center justify-center relative transition-all duration-[1500ms] ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0'
@@ -133,33 +138,37 @@ function Home() {
           </div>
         </div>
 
-        {/* Art Section */}
-        <div className="min-h-[200vh]"> {/* Container for art section with scroll space */}
+        {/* Art Section with optimized transforms */}
+        <div className="min-h-[200vh]">
           <div className="h-screen sticky top-0 flex items-start justify-center overflow-hidden">
-            {/* Frame Image */}
-            <div className="absolute z-10 w-full max-w-3xl md:max-w-3xl flex items-center justify-center opacity-0 transition-opacity duration-500"
+            {/* Frame Image with hardware acceleration */}
+            <div
+              className="absolute z-10 w-full max-w-3xl md:max-w-3xl flex items-center justify-center opacity-0 transition-opacity duration-500 transform-gpu"
               style={{
                 opacity: scrollPosition > 1500 ? 1 : 0,
                 top: '50%',
-                transform: 'translateY(-50%)'
+                transform: 'translateY(-50%)',
+                willChange: 'opacity'
               }}>
               <img
                 src="/assets/frame-2.png"
                 alt="Art Frame"
                 className="w-full h-auto"
+                loading="eager"
               />
             </div>
 
-            {/* Art Image */}
+            {/* Art Image with hardware acceleration */}
             <div
               ref={artRef}
-              className="absolute z-20 w-full max-w-[90vh] md:max-w-[90vh] transition-all duration-100"
+              className="absolute z-20 w-full max-w-[90vh] md:max-w-[90vh] transition-all duration-100 transform-gpu"
               style={calculateArtTransform()}
             >
               <img
                 src="/assets/art.JPEG"
                 alt="Artwork"
                 className="w-full h-auto object-cover"
+                loading="eager"
               />
             </div>
           </div>
