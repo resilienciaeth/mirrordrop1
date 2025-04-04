@@ -182,9 +182,9 @@ function Home() {
 
   return (
     <>
-      <div className={`min-h-[200vh] md:min-h-[300vh] bg-black will-change-scroll ${!contentUnlocked ? 'overflow-hidden' : ''}`}>
+      <div className={`min-h-[200vh] mt-10 md:min-h-[300vh] bg-black will-change-scroll ${!contentUnlocked ? 'overflow-hidden' : ''}`}>
         {/* First Section - Video */}
-        <div className="h-screen relative bg-black overflow-y-auto">
+        <div className=" relative bg-black overflow-y-auto">
           <div className="absolute inset-0 flex items-start justify-center overflow-y-auto">
             {/* Video container */}
             <div className="relative w-full max-w-2xl mx-auto text-center pt-8 md:pt-12 pb-16">
