@@ -11,7 +11,9 @@ function Home() {
   const [contentUnlocked, setContentUnlocked] = useState(false);
   const [showPlayButton, setShowPlayButton] = useState(true);
   const [framesLoaded, setFramesLoaded] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);
+  const audioRef = useRef(null);
   const artRef = useRef(null);
   const ticking = useRef(false);
   const isMobile = window.innerWidth <= 768;
@@ -43,6 +45,36 @@ function Home() {
       setIsVisible(true);
     }, 300);
     return () => clearTimeout(timer);
+  }, []);
+
+  // Handle audio play/pause
+  const toggleAudio = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.pause();
+    } else {
+      audio.play().catch(err => {
+        console.error('Error playing audio:', err);
+      });
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  // Update isPlaying state when audio ends
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      const handleAudioEnd = () => {
+        setIsPlaying(false);
+      };
+
+      audio.addEventListener('ended', handleAudioEnd);
+      return () => {
+        audio.removeEventListener('ended', handleAudioEnd);
+      };
+    }
   }, []);
 
   // Handle video end
@@ -188,7 +220,7 @@ function Home() {
                 <div className="relative mt-4">
                   <video
                     ref={videoRef}
-                    className="mx-auto w-auto h-auto max-w-full max-h-[50vh]  cursor-pointer"
+                    className="mx-auto w-auto h-auto max-w-full max-h-[50vh] cursor-pointer"
                     style={{
                       maxHeight: isMobile ? '65vh' : '50vh',
                       width: isMobile ? '100%' : 'auto'
@@ -199,6 +231,27 @@ function Home() {
                     poster="/assets/envelope-frames/frame-001.jpg"
                     onClick={handleVideoPlay}
                   />
+                </div>
+
+                {/* Audio Controls - Only visible after video ends */}
+                <div className={`transition-opacity duration-1000 ${contentUnlocked ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                  <audio ref={audioRef} src="/assets/audio.wav" preload="auto" />
+
+                  <div className="flex items-center justify-center mt-6 mb-2">
+                    <button
+                      onClick={toggleAudio}
+                      className="flex items-center justify-center focus:outline-none transform hover:scale-105 active:scale-95 transition-transform duration-100"
+                    >
+                      <img
+                        src={isPlaying ? "/assets/pause.png" : "/assets/play.png"}
+                        alt={isPlaying ? "Pause" : "Play"}
+                        className="w-14 h-14 md:w-16 md:h-16 object-contain filter drop-shadow-lg"
+                      />
+                    </button>
+                    <p className="ml-4 text-white/80 italic text-sm md:text-base">
+                      Listen to the letter
+                    </p>
+                  </div>
                 </div>
 
                 <div className={`mt-12 md:mt-16 transition-opacity duration-1000 ${contentUnlocked ? 'opacity-100' : 'opacity-0'}`}>
