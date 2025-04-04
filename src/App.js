@@ -182,9 +182,9 @@ function Home() {
 
   return (
     <>
-      <div className={`min-h-[200vh] mt-10 md:min-h-[300vh] bg-black will-change-scroll ${!contentUnlocked ? 'overflow-hidden' : ''}`}>
+      <div className={`min-h-[200vh] md:min-h-[300vh] bg-black will-change-scroll ${!contentUnlocked ? 'overflow-hidden' : ''}`}>
         {/* First Section - Video */}
-        <div className=" relative bg-black overflow-y-auto">
+        <div className="h-screen relative bg-black overflow-y-auto">
           <div className="absolute inset-0 flex items-start justify-center overflow-y-auto">
             {/* Video container */}
             <div className="relative w-full max-w-2xl mx-auto text-center pt-8 md:pt-12 pb-16">
@@ -265,8 +265,8 @@ function Home() {
         {/* The rest of the content is only visible after the video completes */}
         <div className={`transition-opacity duration-1000 ${contentUnlocked ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {/* Transition Text Section */}
-          <div className="pt-16 md:pt-0 flex items-center justify-center relative bg-black">
-            <div className="relative z-10 max-w-2xl mx-auto text-center space-y-2 md:space-y-12 px-6 md:px-0 mt-8 md:mt-0">
+          <div className="pt-8 md:pt-0 flex items-center justify-center relative bg-black">
+            <div className="relative z-10 max-w-2xl mx-auto text-center space-y-2 md:space-y-12 px-6 md:px-0">
               <div className="space-y-6 md:space-y-8">
                 <p className="text-lg md:text-2xl text-white italic leading-relaxed tracking-wide">
                   If the storm outside begins inside,<br />
