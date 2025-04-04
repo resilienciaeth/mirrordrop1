@@ -404,6 +404,7 @@ function Home() {
           className="group relative w-full md:w-auto px-4 md:px-8 py-3 md:py-4 bg-black/80 backdrop-blur-md rounded-full border border-white/10 
                      text-white hover:bg-black/90 transition-all duration-300
                      flex items-center justify-center md:justify-start gap-2"
+          onClick={() => window.open('https://checkout.viulet.com/letters-mirror', '_blank')}
         >
           <span className="relative z-10 text-xs md:text-sm font-light tracking-wide">
             1/100 Mirrors <span className="underline underline-offset-4">Claimed</span>. Acquire <span className="underline underline-offset-4">Yours</span>
