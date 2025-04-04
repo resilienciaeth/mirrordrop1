@@ -14,30 +14,27 @@ function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);
   const audioRef = useRef(null);
-  const artRef = useRef(null);
   const ticking = useRef(false);
   const isMobile = window.innerWidth <= 768;
-  const totalFrames = 89; // Total frames for art animation
+  const totalFrames = 59; // Total frames for art animation
 
-  // Preload frames for mobile art animation
+  // Preload frames for art animation (now for both mobile and desktop)
   useEffect(() => {
-    if (isMobile) {
-      const preloadArtImages = Array.from({ length: totalFrames }, (_, i) => {
-        const img = new Image();
-        img.src = `/assets/frames/frame-${String(i + 1).padStart(3, '0')}.jpg`;
-        return img;
-      });
+    const preloadArtImages = Array.from({ length: totalFrames }, (_, i) => {
+      const img = new Image();
+      img.src = `/assets/frames/frame-${String(i + 1).padStart(3, '0')}.jpg`;
+      return img;
+    });
 
-      Promise.all(preloadArtImages.map(img => {
-        return new Promise((resolve) => {
-          img.onload = resolve;
-          img.onerror = resolve;
-        });
-      })).then(() => {
-        setFramesLoaded(true);
+    Promise.all(preloadArtImages.map(img => {
+      return new Promise((resolve) => {
+        img.onload = resolve;
+        img.onerror = resolve;
       });
-    }
-  }, [isMobile]);
+    })).then(() => {
+      setFramesLoaded(true);
+    });
+  }, []);
 
   // Fade in effect on mount with longer delay
   useEffect(() => {
@@ -124,21 +121,19 @@ function Home() {
     };
   }, [contentUnlocked]);
 
-  // Throttled scroll handler for art animation (mobile only)
+  // Throttled scroll handler for art animation (now for both mobile and desktop)
   const handleScroll = useCallback(() => {
     if (!ticking.current && contentUnlocked) {
       window.requestAnimationFrame(() => {
         const position = window.scrollY;
         setScrollPosition(position);
 
-        // Control art frame animation on mobile (only after video is complete)
-        if (isMobile) {
-          const viewingSpace = 1000;
-          const animationSpace = 1000;
-          const progress = Math.min(Math.max((position - viewingSpace) / animationSpace, 0), 1);
-          const frame = Math.min(Math.ceil(progress * totalFrames), totalFrames);
-          setCurrentFrame(frame);
-        }
+        // Control art frame animation (for both mobile and desktop)
+        const viewingSpace = isMobile ? 1000 : 1500;
+        const animationSpace = 1000;
+        const progress = Math.min(Math.max((position - viewingSpace) / animationSpace, 0), 1);
+        const frame = Math.min(Math.ceil(progress * totalFrames), totalFrames);
+        setCurrentFrame(frame);
 
         ticking.current = false;
       });
@@ -154,38 +149,7 @@ function Home() {
     }
   }, [handleScroll, contentUnlocked]);
 
-  // Calculate art transform (now only for desktop)
-  const calculateArtTransform = useCallback(() => {
-    if (isMobile) {
-      return {
-        opacity: 0 // Hide the transform-based art on mobile
-      };
-    }
-
-    const viewingSpace = 1000;
-    const animationSpace = 1000;
-
-    if (scrollPosition <= viewingSpace) {
-      return {
-        transform: `translate3d(0, 0, 0) scale(1)`,
-        opacity: 1,
-        willChange: 'transform'
-      };
-    }
-
-    const rawProgress = (scrollPosition - viewingSpace) / animationSpace;
-    const progress = Math.min(Math.max(rawProgress, 0), 1);
-    const scale = 1 - (progress * 0.55);
-    const yOffset = progress * 10.5;
-
-    return {
-      transform: `translate3d(0, ${yOffset}vh, 0) scale(${scale})`,
-      opacity: 1,
-      willChange: 'transform'
-    };
-  }, [scrollPosition, isMobile]);
-
-  // Smooth easing function
+  // Smooth easing function (kept for potential future use)
   const easeOutCubic = (x) => {
     return 1 - Math.pow(1 - x, 3);
   };
@@ -303,64 +267,32 @@ function Home() {
             </div>
           </div>
 
-          {/* Art Section with frames for mobile */}
-          <div className="min-h-[200vh]">
+          {/* Art Section with frames for both mobile and desktop */}
+          <div className="min-h-[200vh] md:min-h-[250vh]">
             <div className="h-screen sticky top-0 flex items-center justify-center overflow-hidden">
-              {/* Frame Image */}
+              {/* Frame Animation for both mobile and desktop */}
               <div
-                className="absolute z-10 w-full max-w-3xl md:max-w-3xl flex items-center justify-center opacity-0 transition-opacity duration-500 transform-gpu"
+                className="absolute z-20 w-full h-full flex items-center justify-center"
                 style={{
-                  opacity: scrollPosition > 1500 ? 1 : 0,
-                  top: isMobile ? '35%' : '50%',
-                  transform: 'translateY(-50%)',
-                  willChange: 'opacity'
-                }}>
-                <img
-                  src="/assets/frame-2.png"
-                  alt="Art Frame"
-                  className="w-full h-auto"
-                  loading="eager"
-                />
-              </div>
-
-              {/* Mobile Frame Animation */}
-              {isMobile && (
-                <div
-                  className="absolute z-20 w-full h-full flex items-center justify-center"
-                  style={{
-                    top: '-15%'
-                  }}
-                >
-                  {framesLoaded ? (
-                    <img
-                      src={`/assets/frames/frame-${String(currentFrame).padStart(3, '0')}.jpg`}
-                      alt="Animation Frame"
-                      className="w-full h-full object-contain"
-                      style={{
-                        maxHeight: '80vh'
-                      }}
-                      loading="eager"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <div className="animate-pulse bg-gray-800 w-full h-full" />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Desktop Transform Animation */}
-              <div
-                ref={artRef}
-                className="absolute z-20 w-full max-w-[90vh] md:max-w-[90vh] transition-all duration-100 transform-gpu"
-                style={calculateArtTransform()}
+                  top: isMobile ? '-5%' : '-5%'
+                }}
               >
-                <img
-                  src="/assets/art.JPEG"
-                  alt="Artwork"
-                  className="w-full h-auto object-cover"
-                  loading="eager"
-                />
+                {framesLoaded ? (
+                  <img
+                    src={`/assets/frames/frame-${String(currentFrame).padStart(3, '0')}.jpg`}
+                    alt="Animation Frame"
+                    className="w-full h-full object-contain"
+                    style={{
+                      maxHeight: isMobile ? '85vh' : '90vh',
+                      maxWidth: isMobile ? '100%' : '90%'
+                    }}
+                    loading="eager"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="animate-pulse bg-gray-800 w-full h-full" />
+                  </div>
+                )}
               </div>
             </div>
           </div>
