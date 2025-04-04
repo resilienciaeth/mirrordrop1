@@ -56,26 +56,56 @@ export function Password() {
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="space-y-4">
-                        <input
-                            id="password"
-                            name="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            className="w-full px-4 py-3 bg-black/50 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white/40"
-                            placeholder="Enter your key"
-                            autoFocus
-                        />
+                        <div className="relative">
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                className="w-full px-6 py-4 
+                                        bg-gradient-to-b from-gray-800 to-gray-900
+                                        border-2 border-gray-600 rounded-full
+                                        text-gray-300 placeholder-gray-500
+                                        shadow-inner
+                                        focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500
+                                        transition-all duration-200"
+                                placeholder="Enter your key"
+                                autoFocus
+                            />
+                            <div className="absolute inset-0 rounded-full pointer-events-none overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-50"></div>
+                            </div>
+                        </div>
+
                         {error && (
                             <p className="text-red-400 text-sm text-center italic">{error}</p>
                         )}
-                        <button
-                            type="submit"
-                            className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm text-white font-medium rounded-lg border border-white/20 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all duration-200"
-                        >
-                            Submit
-                        </button>
+
+                        <div className="relative">
+                            <button
+                                type="submit"
+                                className="w-full py-4 font-serif tracking-widest text-lg uppercase 
+                                           bg-gradient-to-b from-gray-700 to-gray-900 
+                                           border-2 border-gray-600 rounded-full
+                                           shadow-[0_4px_0_rgba(0,0,0,0.3)] 
+                                           text-transparent bg-clip-text 
+                                           relative transform translate-y-[-1px]
+                                           hover:translate-y-[0px] 
+                                           hover:shadow-[0_3px_0_rgba(0,0,0,0.3)]
+                                           active:translate-y-[2px]
+                                           active:shadow-[0_0px_0_rgba(0,0,0,0.3)]
+                                           transition-all duration-100"
+                            >
+                                <span className="text-transparent bg-clip-text bg-gradient-to-b from-gray-200 to-gray-400 font-semibold">
+                                    UNLOCK
+                                </span>
+                            </button>
+                            <div className="absolute inset-0 rounded-full border border-gray-800 pointer-events-none overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/0 to-white/10 opacity-30"></div>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
