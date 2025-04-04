@@ -12,39 +12,64 @@ function Home() {
   const [showPlayButton, setShowPlayButton] = useState(true);
   const [framesLoaded, setFramesLoaded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [preloadedImages, setPreloadedImages] = useState([]);
   const videoRef = useRef(null);
   const audioRef = useRef(null);
   const ticking = useRef(false);
   const lastScrollY = useRef(0);
   const lastFrameUpdate = useRef(0);
+  const requestRef = useRef(null);
+  const animationFrameId = useRef(null);
   const isMobile = window.innerWidth <= 768;
   const totalFrames = 59; // Total frames for art animation
 
-  // Preload frames for art animation (now for both mobile and desktop)
+  // Preload frames for art animation with improved loading strategy
   useEffect(() => {
-    // Create an array to hold all image promises
-    const imagePromises = [];
-    const preloadedImages = [];
+    const cachedImages = [];
+    let loadedCount = 0;
 
-    // Load images in sequence to avoid overloading the browser
-    for (let i = 1; i <= totalFrames; i++) {
+    const updateLoadingProgress = () => {
+      loadedCount++;
+      if (loadedCount === totalFrames) {
+        setFramesLoaded(true);
+        setPreloadedImages(cachedImages);
+        console.log('All frames loaded');
+      }
+    };
+
+    // Load images with high priority for the first few frames
+    const loadImage = (index) => {
       const img = new Image();
-      img.src = `/assets/frames/frame-${String(i).padStart(3, '0')}.jpg`;
-      preloadedImages.push(img);
+      const frameNum = String(index).padStart(3, '0');
+      img.src = `/assets/frames/frame-${frameNum}.jpg`;
+      img.decoding = index <= 10 ? 'sync' : 'async'; // Prioritize first frames
+      img.onload = updateLoadingProgress;
+      img.onerror = updateLoadingProgress;
+      cachedImages[index - 1] = img;
+    };
 
-      const promise = new Promise((resolve) => {
-        img.onload = resolve;
-        img.onerror = resolve;
-      });
-      imagePromises.push(promise);
+    // Load first 10 frames immediately, then load the rest
+    for (let i = 1; i <= Math.min(10, totalFrames); i++) {
+      loadImage(i);
     }
 
-    // Wait for all images to load
-    Promise.all(imagePromises).then(() => {
-      setFramesLoaded(true);
-      console.log('All frames loaded');
-    });
-  }, []);
+    // Delay loading the rest slightly to prioritize initial frames
+    setTimeout(() => {
+      for (let i = 11; i <= totalFrames; i++) {
+        loadImage(i);
+      }
+    }, 200);
+
+    return () => {
+      // Clear any in-flight image loads if component unmounts
+      cachedImages.forEach(img => {
+        if (img) {
+          img.onload = null;
+          img.onerror = null;
+        }
+      });
+    };
+  }, [totalFrames]);
 
   // Fade in effect on mount with longer delay
   useEffect(() => {
@@ -131,51 +156,94 @@ function Home() {
     };
   }, [contentUnlocked]);
 
-  // Throttled scroll handler for art animation with improved performance
+  // Optimized scroll animation
+  const animateScroll = useCallback(() => {
+    const position = window.scrollY;
+
+    // Don't update state unnecessarily
+    if (Math.abs(position - lastScrollY.current) < 5) {
+      // Schedule next frame if we're still scrolling
+      animationFrameId.current = requestAnimationFrame(animateScroll);
+      return;
+    }
+
+    const now = Date.now();
+    lastScrollY.current = position;
+
+    // Add a time-based throttle to prevent too many updates
+    if (now - lastFrameUpdate.current < 16) { // ~60fps (1000ms/60 ≈ 16ms)
+      animationFrameId.current = requestAnimationFrame(animateScroll);
+      return;
+    }
+
+    lastFrameUpdate.current = now;
+    setScrollPosition(position);
+
+    // Calculate which frame to show based on scroll position
+    const viewingSpace = isMobile ? 1000 : 1500;
+    const animationSpace = 1000;
+    const progress = Math.min(Math.max((position - viewingSpace) / animationSpace, 0), 1);
+
+    // Use smooth easing function for more natural animation
+    const easedProgress = easeOutCubic(progress);
+    const frameNumber = Math.min(Math.ceil(easedProgress * totalFrames), totalFrames);
+
+    if (frameNumber !== currentFrame) {
+      setCurrentFrame(frameNumber);
+    }
+
+    // Continue animation loop if we're still scrolling
+    animationFrameId.current = requestAnimationFrame(animateScroll);
+  }, [currentFrame, isMobile, totalFrames]);
+
+  // Improved scroll handler with debounce
   const handleScroll = useCallback(() => {
-    // Skip if scrolling is locked or already processing a frame
-    if (ticking.current || !contentUnlocked) return;
+    if (!contentUnlocked) return;
 
-    // Set ticking to true to prevent multiple calls
-    ticking.current = true;
+    // Cancel any existing animation frame request
+    if (animationFrameId.current) {
+      cancelAnimationFrame(animationFrameId.current);
+    }
 
-    // Use requestAnimationFrame to align with browser's paint cycle
-    window.requestAnimationFrame(() => {
-      const now = Date.now();
-      const position = window.scrollY;
+    // Start the animation loop
+    animationFrameId.current = requestAnimationFrame(animateScroll);
 
-      // Only update if scroll position changed significantly or enough time passed
-      if (Math.abs(position - lastScrollY.current) > 5 || now - lastFrameUpdate.current > 50) {
-        lastScrollY.current = position;
-        lastFrameUpdate.current = now;
-        setScrollPosition(position);
-
-        // Control art frame animation (for both mobile and desktop)
-        const viewingSpace = isMobile ? 1000 : 1500;
-        const animationSpace = 1000;
-        const progress = Math.min(Math.max((position - viewingSpace) / animationSpace, 0), 1);
-
-        // Calculate frame more efficiently
-        const frameNumber = Math.min(Math.ceil(progress * totalFrames), totalFrames);
-        if (frameNumber !== currentFrame) {
-          setCurrentFrame(frameNumber);
-        }
+    // Set a timeout to stop the animation after scrolling stops
+    clearTimeout(requestRef.current);
+    requestRef.current = setTimeout(() => {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+        animationFrameId.current = null;
       }
+    }, 100);
+  }, [animateScroll, contentUnlocked]);
 
-      // Reset ticking flag after processing
-      ticking.current = false;
-    });
-  }, [isMobile, totalFrames, contentUnlocked, currentFrame]);
+  // Cleanup animation frames on unmount
+  useEffect(() => {
+    return () => {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
+      if (requestRef.current) {
+        clearTimeout(requestRef.current);
+      }
+    };
+  }, []);
 
-  // Handle scroll effect with passive listener
+  // Handle scroll effect with optimized event listener
   useEffect(() => {
     if (contentUnlocked) {
+      // Use the scroll event with passive flag for better performance
       window.addEventListener('scroll', handleScroll, { passive: true });
-      return () => window.removeEventListener('scroll', handleScroll);
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+        if (requestRef.current) clearTimeout(requestRef.current);
+        if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
+      };
     }
   }, [handleScroll, contentUnlocked]);
 
-  // Smooth easing function (kept for potential future use)
+  // Smooth easing function for animation
   const easeOutCubic = (x) => {
     return 1 - Math.pow(1 - x, 3);
   };
@@ -293,12 +361,12 @@ function Home() {
             </div>
           </div>
 
-          {/* Art Section with frames for both mobile and desktop */}
+          {/* Art Section with frames */}
           <div className="min-h-[200vh] md:min-h-[250vh]">
             <div className="h-screen sticky top-0 flex items-center justify-center overflow-hidden">
-              {/* Frame Animation for both mobile and desktop */}
+              {/* Frame Animation with optimized performance */}
               <div
-                className="absolute z-20 w-full h-full flex items-center justify-center transform-gpu"
+                className="absolute z-20 w-full h-full flex items-center justify-center transform-gpu will-change-transform"
                 style={{
                   top: '0%'
                 }}
@@ -311,7 +379,11 @@ function Home() {
                     style={{
                       maxHeight: isMobile ? '85vh' : '90vh',
                       maxWidth: isMobile ? '100%' : '90%',
-                      transform: 'translateZ(0)'
+                      transform: 'translateZ(0)',
+                      backfaceVisibility: 'hidden',
+                      perspective: 1000,
+                      WebkitBackfaceVisibility: 'hidden',
+                      WebkitPerspective: 1000
                     }}
                     loading="eager"
                   />
