@@ -9,10 +9,32 @@ function Home() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [currentFrame, setCurrentFrame] = useState(1);
+  const [framesLoaded, setFramesLoaded] = useState(false);
   const artRef = useRef(null);
-  const videoRef = useRef(null);
   const ticking = useRef(false);
   const isMobile = window.innerWidth <= 768;
+  const totalFrames = 89; // Total frames extracted from the video
+
+  // Preload frames
+  useEffect(() => {
+    if (isMobile) {
+      const preloadImages = Array.from({ length: totalFrames }, (_, i) => {
+        const img = new Image();
+        img.src = `/assets/frames/frame-${String(i + 1).padStart(3, '0')}.jpg`;
+        return img;
+      });
+
+      Promise.all(preloadImages.map(img => {
+        return new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve; // Handle any loading errors gracefully
+        });
+      })).then(() => {
+        setFramesLoaded(true);
+      });
+    }
+  }, [isMobile]);
 
   const handleEnvelopeClick = () => {
     if (!isAnimating) {
@@ -41,22 +63,22 @@ function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Throttled scroll handler with video control for mobile
+  // Throttled scroll handler with frame control for mobile
   const handleScroll = useCallback(() => {
     if (!ticking.current) {
       window.requestAnimationFrame(() => {
         const position = window.scrollY;
         setScrollPosition(position);
 
-        // Control video playback on mobile
-        if (isMobile && videoRef.current) {
+        // Control frame animation on mobile
+        if (isMobile) {
           const viewingSpace = 1000;
           const animationSpace = 1000;
           const progress = Math.min(Math.max((position - viewingSpace) / animationSpace, 0), 1);
 
-          // Calculate video time based on scroll progress
-          const videoDuration = videoRef.current.duration || 1;
-          videoRef.current.currentTime = progress * videoDuration;
+          // Calculate current frame based on scroll progress
+          const frame = Math.min(Math.ceil(progress * totalFrames), totalFrames);
+          setCurrentFrame(frame);
         }
 
         ticking.current = false;
@@ -149,18 +171,61 @@ function Home() {
                 onClick={handleEnvelopeClick}
               />
             </div>
+
+            <div className={`mt-12 md:mt-16 opacity-0 transition-opacity duration-1000 ${currentEnvelope === 4 ? 'opacity-100' : ''}`}>
+              <p className="text-base md:text-xl text-white/90 italic leading-relaxed tracking-wider px-6 md:px-0">
+                It is not only about the message within the letter—<br />
+                it is about the writing itself.<br />
+                For tomorrow never arrives,<br />
+                and so the journey is all that truly exists.<br />
+                This was the ritual,<br />
+                the madness,<br />
+                the beauty—<br />
+                that gave birth to this mirror.<br />
+                This Mirror of Remembering.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Art Section with video for mobile */}
+        {/* Transition Text Section */}
+        <div className="min-h-screen flex items-center justify-center relative bg-black">
+          <div className="relative z-10 max-w-2xl mx-auto text-center space-y-8 md:space-y-12 px-6 md:px-0">
+            <div className="space-y-6 md:space-y-8">
+              <p className="text-lg md:text-2xl text-white italic leading-relaxed tracking-wide">
+                If the storm outside begins inside,<br />
+                then the calm must begin there too.
+              </p>
+
+              <p className="text-lg md:text-2xl text-white italic leading-relaxed tracking-wide">
+                You are the artist of your life<br />
+                Because the choice is yours. Always has been. Always will be.<br />
+                You already hold the brush.
+              </p>
+
+              <p className="text-lg md:text-2xl text-white italic leading-relaxed tracking-wide">
+                So paint away my friend.
+              </p>
+
+              <div className="pt-8 md:pt-12">
+                <p className="text-base md:text-xl text-white/80 italic leading-relaxed tracking-wider">
+                  I present to you, your<br />
+                  <span className="text-lg md:text-2xl text-white tracking-widest">Letters To The Subconscious</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Art Section with frames for mobile */}
         <div className="min-h-[200vh]">
-          <div className="h-screen sticky top-0 flex items-start justify-center overflow-hidden">
+          <div className="h-screen sticky top-0 flex items-center justify-center overflow-hidden">
             {/* Frame Image */}
             <div
               className="absolute z-10 w-full max-w-3xl md:max-w-3xl flex items-center justify-center opacity-0 transition-opacity duration-500 transform-gpu"
               style={{
                 opacity: scrollPosition > 1500 ? 1 : 0,
-                top: '50%',
+                top: isMobile ? '35%' : '50%',
                 transform: 'translateY(-50%)',
                 willChange: 'opacity'
               }}>
@@ -172,20 +237,29 @@ function Home() {
               />
             </div>
 
-            {/* Mobile Video Animation */}
+            {/* Mobile Frame Animation */}
             {isMobile && (
-              <div className="absolute z-20 w-full h-full">
-                <video
-                  ref={videoRef}
-                  className="w-full h-full object-cover"
-                  src="/assets/video.mov"
-                  playsInline
-                  muted
-                  preload="auto"
-                  style={{
-                    objectFit: 'contain'
-                  }}
-                />
+              <div
+                className="absolute z-20 w-full h-full flex items-center justify-center"
+                style={{
+                  top: '-15%'
+                }}
+              >
+                {framesLoaded ? (
+                  <img
+                    src={`/assets/frames/frame-${String(currentFrame).padStart(3, '0')}.jpg`}
+                    alt="Animation Frame"
+                    className="w-full h-full object-contain"
+                    style={{
+                      maxHeight: '80vh'
+                    }}
+                    loading="eager"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="animate-pulse bg-gray-800 w-full h-full" />
+                  </div>
+                )}
               </div>
             )}
 
