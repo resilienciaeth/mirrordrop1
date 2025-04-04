@@ -239,8 +239,8 @@ function Home() {
         {/* The rest of the content is only visible after the video completes */}
         <div className={`transition-opacity duration-1000 ${contentUnlocked ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {/* Transition Text Section */}
-          <div className="min-h-screen flex items-center justify-center relative bg-black">
-            <div className="relative z-10 max-w-2xl mx-auto text-center space-y-8 md:space-y-12 px-6 md:px-0">
+          <div className="pt-8 md:pt-0 flex items-center justify-center relative bg-black">
+            <div className="relative z-10 max-w-2xl mx-auto text-center space-y-2 md:space-y-12 px-6 md:px-0">
               <div className="space-y-6 md:space-y-8">
                 <p className="text-lg md:text-2xl text-white italic leading-relaxed tracking-wide">
                   If the storm outside begins inside,<br />
@@ -257,7 +257,7 @@ function Home() {
                   So paint away my friend.
                 </p>
 
-                <div className="pt-8 md:pt-12">
+                <div className="pt-4 md:pt-12 pb-4 md:pb-12">
                   <p className="text-base md:text-xl text-white/80 italic leading-relaxed tracking-wider">
                     I present to you, your<br />
                     <span className="text-lg md:text-2xl text-white tracking-widest">Letters To The Subconscious</span>
@@ -274,7 +274,7 @@ function Home() {
               <div
                 className="absolute z-20 w-full h-full flex items-center justify-center"
                 style={{
-                  top: isMobile ? '-5%' : '-5%'
+                  top: '0%'
                 }}
               >
                 {framesLoaded ? (
