@@ -15,24 +15,34 @@ function Home() {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
   const ticking = useRef(false);
+  const lastScrollY = useRef(0);
+  const lastFrameUpdate = useRef(0);
   const isMobile = window.innerWidth <= 768;
   const totalFrames = 59; // Total frames for art animation
 
   // Preload frames for art animation (now for both mobile and desktop)
   useEffect(() => {
-    const preloadArtImages = Array.from({ length: totalFrames }, (_, i) => {
-      const img = new Image();
-      img.src = `/assets/frames/frame-${String(i + 1).padStart(3, '0')}.jpg`;
-      return img;
-    });
+    // Create an array to hold all image promises
+    const imagePromises = [];
+    const preloadedImages = [];
 
-    Promise.all(preloadArtImages.map(img => {
-      return new Promise((resolve) => {
+    // Load images in sequence to avoid overloading the browser
+    for (let i = 1; i <= totalFrames; i++) {
+      const img = new Image();
+      img.src = `/assets/frames/frame-${String(i).padStart(3, '0')}.jpg`;
+      preloadedImages.push(img);
+
+      const promise = new Promise((resolve) => {
         img.onload = resolve;
         img.onerror = resolve;
       });
-    })).then(() => {
+      imagePromises.push(promise);
+    }
+
+    // Wait for all images to load
+    Promise.all(imagePromises).then(() => {
       setFramesLoaded(true);
+      console.log('All frames loaded');
     });
   }, []);
 
@@ -121,25 +131,41 @@ function Home() {
     };
   }, [contentUnlocked]);
 
-  // Throttled scroll handler for art animation (now for both mobile and desktop)
+  // Throttled scroll handler for art animation with improved performance
   const handleScroll = useCallback(() => {
-    if (!ticking.current && contentUnlocked) {
-      window.requestAnimationFrame(() => {
-        const position = window.scrollY;
+    // Skip if scrolling is locked or already processing a frame
+    if (ticking.current || !contentUnlocked) return;
+
+    // Set ticking to true to prevent multiple calls
+    ticking.current = true;
+
+    // Use requestAnimationFrame to align with browser's paint cycle
+    window.requestAnimationFrame(() => {
+      const now = Date.now();
+      const position = window.scrollY;
+
+      // Only update if scroll position changed significantly or enough time passed
+      if (Math.abs(position - lastScrollY.current) > 5 || now - lastFrameUpdate.current > 50) {
+        lastScrollY.current = position;
+        lastFrameUpdate.current = now;
         setScrollPosition(position);
 
         // Control art frame animation (for both mobile and desktop)
         const viewingSpace = isMobile ? 1000 : 1500;
         const animationSpace = 1000;
         const progress = Math.min(Math.max((position - viewingSpace) / animationSpace, 0), 1);
-        const frame = Math.min(Math.ceil(progress * totalFrames), totalFrames);
-        setCurrentFrame(frame);
 
-        ticking.current = false;
-      });
-      ticking.current = true;
-    }
-  }, [isMobile, totalFrames, contentUnlocked]);
+        // Calculate frame more efficiently
+        const frameNumber = Math.min(Math.ceil(progress * totalFrames), totalFrames);
+        if (frameNumber !== currentFrame) {
+          setCurrentFrame(frameNumber);
+        }
+      }
+
+      // Reset ticking flag after processing
+      ticking.current = false;
+    });
+  }, [isMobile, totalFrames, contentUnlocked, currentFrame]);
 
   // Handle scroll effect with passive listener
   useEffect(() => {
@@ -239,8 +265,8 @@ function Home() {
         {/* The rest of the content is only visible after the video completes */}
         <div className={`transition-opacity duration-1000 ${contentUnlocked ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {/* Transition Text Section */}
-          <div className="pt-8 md:pt-0 flex items-center justify-center relative bg-black">
-            <div className="relative z-10 max-w-2xl mx-auto text-center space-y-2 md:space-y-12 px-6 md:px-0">
+          <div className="pt-16 md:pt-0 flex items-center justify-center relative bg-black">
+            <div className="relative z-10 max-w-2xl mx-auto text-center space-y-2 md:space-y-12 px-6 md:px-0 mt-8 md:mt-0">
               <div className="space-y-6 md:space-y-8">
                 <p className="text-lg md:text-2xl text-white italic leading-relaxed tracking-wide">
                   If the storm outside begins inside,<br />
@@ -272,7 +298,7 @@ function Home() {
             <div className="h-screen sticky top-0 flex items-center justify-center overflow-hidden">
               {/* Frame Animation for both mobile and desktop */}
               <div
-                className="absolute z-20 w-full h-full flex items-center justify-center"
+                className="absolute z-20 w-full h-full flex items-center justify-center transform-gpu"
                 style={{
                   top: '0%'
                 }}
@@ -281,10 +307,11 @@ function Home() {
                   <img
                     src={`/assets/frames/frame-${String(currentFrame).padStart(3, '0')}.jpg`}
                     alt="Animation Frame"
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain will-change-contents"
                     style={{
                       maxHeight: isMobile ? '85vh' : '90vh',
-                      maxWidth: isMobile ? '100%' : '90%'
+                      maxWidth: isMobile ? '100%' : '90%',
+                      transform: 'translateZ(0)'
                     }}
                     loading="eager"
                   />
