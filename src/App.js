@@ -182,13 +182,13 @@ function Home() {
 
   return (
     <>
-      <div className={`min-h-[200vh] md:min-h-[300vh] bg-black will-change-scroll ${!contentUnlocked ? 'overflow-hidden' : ''}`}>
+      <div className={`min-h-[250vh] md:min-h-[300vh] bg-black will-change-scroll ${!contentUnlocked ? 'overflow-hidden' : ''}`}>
         {/* First Section - Video */}
         <div className="h-screen relative bg-black overflow-y-auto">
           <div className="absolute inset-0 flex items-start justify-center overflow-y-auto">
             {/* Video container */}
-            <div className="relative w-full max-w-2xl mx-auto text-center pt-8 md:pt-12 pb-16">
-              <div className={`relative z-10 max-w-2xl mx-auto text-center space-y-8 md:space-y-12 px-6 md:px-0 transform transition-all duration-[1500ms] ease-out ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+            <div className="relative w-ful max-w-2xl mx-auto text-center pt-8 md:pt-12 pb-16">
+              <div className={`relative mt-10 z-10 max-w-2xl mx-auto text-center space-y-8 md:space-y-12 px-6 md:px-0 transform transition-all duration-[1500ms] ease-out ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
                 <p className="text-lg md:text-2xl text-white italic leading-relaxed tracking-wide">
                   "Because true art is not a decoration.<br />
                   True art does not hang dead in silence—<br />
