@@ -263,7 +263,7 @@ function Home() {
                   it stares back at you, unflinching and raw,<br />
                   revealing the depths of who you truly are.<br />
                   True art…<br />
-                  is a mirror."
+                  is a Mirror."
                 </p>
 
                 <p className="text-base md:text-xl text-white/90 italic leading-relaxed tracking-wider">
@@ -272,27 +272,77 @@ function Home() {
                 </p>
 
                 <p className="text-white/90 italic text-lg md:text-xl tracking-wider">
-                  I invite you to open the envelope
+                  Shall we open the Seal?
                 </p>
 
                 <div className="relative mt-4">
                   <video
                     ref={videoRef}
-                    className="mx-auto w-auto h-auto max-w-full max-h-[50vh] cursor-pointer"
+                    className={`mx-auto w-auto h-auto max-w-full max-h-[50vh] cursor-pointer transition-all duration-300 ${showPlayButton && !contentUnlocked ? 'hover:scale-[1.03] hover:brightness-125 hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.25)]' : ''}`}
                     style={{
                       maxHeight: isMobile ? '65vh' : '50vh',
                       width: isMobile ? '100%' : 'auto'
                     }}
                     preload="auto"
                     playsInline
-                    src="/assets/envelope-animation.mp4"
+                    src="/assets/animation-envelope.mp4"
                     poster="/assets/envelope-frames/frame-001.jpg"
                     onClick={handleVideoPlay}
                   />
+                  {/* Envelope hover glow effect */}
+                  {showPlayButton && !contentUnlocked && (
+                    <div
+                      className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/0 to-white/5 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                      style={{
+                        borderRadius: '4px',
+                        mixBlendMode: 'overlay'
+                      }}
+                    />
+                  )}
                 </div>
 
                 {/* Audio Controls - Only visible after video ends */}
                 <div className={`transition-opacity duration-1000 ${contentUnlocked ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                  {/* Creation Video and Text */}
+                  <div className="mt-8 md:mt-12 mb-12 md:mb-16">
+                    <p className="text-base md:text-xl text-white/90 italic leading-relaxed tracking-wider mb-8 md:mb-10">
+                      Yet it is not time to read the Letter.<br />
+                      For it is not only about the message within that envelope—<br />
+                      It is about the writing itself.<br />
+                      For tomorrow never arrives,<br />
+                      and so the journey is all that truly exists.<br />
+                      This was the process of creation,<br />
+                      the beauty,<br />
+                      the "Blooming"<br />
+                      that gave birth to this Mirror.<br />
+                      This Mirror of Remembering.
+                    </p>
+
+                    <div className="relative mx-auto max-w-md">
+                      <video
+                        className="w-full rounded-sm shadow-[0_8px_30px_rgba(0,0,0,0.3)]"
+                        playsInline
+                        src="/assets/creation.mp4"
+                        controls
+                        controlsList="nodownload"
+                        preload="metadata"
+                      />
+                    </div>
+
+                    <div className="mt-8 md:mt-10">
+                      <p className="text-base md:text-lg text-white/90 italic leading-relaxed tracking-wider">
+                        But what does it all mean, within that "Mirror"?<br />
+                        What is the cage?<br />
+                        What are the letters that drift out of it?<br />
+                        And the girl—why does she keep painting them?"<br />
+                        I do not know.<br />
+                        But I do know this:<br />
+                        Every Mirror must whisper.<br />
+                        And whispers… they often carry Truth.
+                      </p>
+                    </div>
+                  </div>
+
                   <audio ref={audioRef} src="/assets/audio.wav" preload="auto" />
 
                   <div className="flex items-center justify-center mt-6 mb-2">
@@ -307,23 +357,47 @@ function Home() {
                       />
                     </button>
                     <p className="ml-4 text-white/80 italic text-sm md:text-base">
-                      Listen to the letter
+                      Hear the Mirror's Whisper
                     </p>
+                  </div>
+
+                  {/* Manuscript Image */}
+                  <div className="mt-8 md:mt-16 flex justify-center w-full">
+                    <img
+                      src="/assets/manuscript.png"
+                      alt="Handwritten Manuscript"
+                      className="w-full md:w-auto max-h-[400px] md:max-h-[600px] object-contain opacity-95 hover:opacity-100 transition-opacity duration-300 transform hover:scale-[1.01] transition-transform"
+                      style={{
+                        filter: 'drop-shadow(0 6px 15px rgba(0, 0, 0, 0.6))'
+                      }}
+                    />
                   </div>
                 </div>
 
                 <div className={`mt-12 md:mt-16 transition-opacity duration-1000 ${contentUnlocked ? 'opacity-100' : 'opacity-0'}`}>
-                  <p className="text-base md:text-xl text-white/90 italic leading-relaxed tracking-wider">
-                    It is not only about the message within the letter—<br />
-                    it is about the writing itself.<br />
-                    For tomorrow never arrives,<br />
-                    and so the journey is all that truly exists.<br />
-                    This was the ritual,<br />
-                    the madness,<br />
-                    the beauty—<br />
-                    that gave birth to this mirror.<br />
-                    This Mirror of Remembering.
-                  </p>
+                  <div className="mt-12 md:mt-20 space-y-6 md:space-y-8">
+                    <p className="text-lg md:text-2xl text-white italic leading-relaxed tracking-wide">
+                      If the storm outside begins inside,<br />
+                      then the calm must begin there too.
+                    </p>
+
+                    <p className="text-lg md:text-2xl text-white italic leading-relaxed tracking-wide">
+                      You are the artist of your life<br />
+                      Because the choice is yours. Always has been. Always will be.<br />
+                      You already hold the brush.
+                    </p>
+
+                    <p className="text-lg md:text-2xl text-white italic leading-relaxed tracking-wide">
+                      So paint away my friend.
+                    </p>
+
+                    <div className="pt-4 md:pt-12 pb-4 md:pb-12">
+                      <p className="text-base md:text-xl text-white/80 italic leading-relaxed tracking-wider">
+                        I present to you, your<br />
+                        <span className="text-lg md:text-2xl text-white tracking-widest">Letters To The Subconscious</span>
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -332,35 +406,6 @@ function Home() {
 
         {/* The rest of the content is only visible after the video completes */}
         <div className={`transition-opacity duration-1000 ${contentUnlocked ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-          {/* Transition Text Section */}
-          <div className="pt-8 md:pt-0 flex items-center justify-center relative bg-black">
-            <div className="relative z-10 max-w-2xl mx-auto text-center space-y-2 md:space-y-12 px-6 md:px-0">
-              <div className="space-y-6 md:space-y-8">
-                <p className="text-lg md:text-2xl text-white italic leading-relaxed tracking-wide">
-                  If the storm outside begins inside,<br />
-                  then the calm must begin there too.
-                </p>
-
-                <p className="text-lg md:text-2xl text-white italic leading-relaxed tracking-wide">
-                  You are the artist of your life<br />
-                  Because the choice is yours. Always has been. Always will be.<br />
-                  You already hold the brush.
-                </p>
-
-                <p className="text-lg md:text-2xl text-white italic leading-relaxed tracking-wide">
-                  So paint away my friend.
-                </p>
-
-                <div className="pt-4 md:pt-12 pb-4 md:pb-12">
-                  <p className="text-base md:text-xl text-white/80 italic leading-relaxed tracking-wider">
-                    I present to you, your<br />
-                    <span className="text-lg md:text-2xl text-white tracking-widest">Letters To The Subconscious</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Art Section with frames */}
           <div className="min-h-[200vh] md:min-h-[250vh]">
             <div className="h-screen sticky top-0 flex items-center justify-center overflow-hidden">
@@ -373,7 +418,7 @@ function Home() {
               >
                 {framesLoaded ? (
                   <img
-                    src={`/assets/frames/frame-${String(currentFrame).padStart(3, '0')}.jpg`}
+                    src={currentFrame === 1 ? "/assets/art.JPEG" : `/assets/frames/frame-${String(currentFrame).padStart(3, '0')}.jpg`}
                     alt="Animation Frame"
                     className="w-full h-full object-contain will-change-contents"
                     style={{
@@ -402,15 +447,19 @@ function Home() {
       <div className="fixed bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] md:w-auto">
         <button
           className="group relative w-full md:w-auto px-4 md:px-8 py-3 md:py-4 bg-black/80 backdrop-blur-md rounded-full border border-white/10 
-                     text-white hover:bg-black/90 transition-all duration-300
-                     flex items-center justify-center md:justify-start gap-2"
+                     text-white hover:bg-black/90 transition-all duration-300 cursor-pointer
+                     flex items-center justify-center md:justify-start gap-2
+                     shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
+          style={{
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4)'
+          }}
           onClick={() => window.open('https://checkout.viulet.com/letters-mirror', '_blank')}
         >
-          <span className="relative z-10 text-xs md:text-sm font-light tracking-wide">
-            1/100 Mirrors <span className="underline underline-offset-4">Claimed</span>. Acquire <span className="underline underline-offset-4">Yours</span>
+          <span className="relative z-10 text-sm md:text-base font-light tracking-wide">
+            1/100 Mirrors <span className="underline underline-offset-4">Claimed</span>. Acquire <span className="underline underline-offset-4 font-medium">Yours</span>
           </span>
           <svg
-            className="w-3 h-3 md:w-4 md:h-4 transition-transform duration-300 group-hover:translate-x-1"
+            className="w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
