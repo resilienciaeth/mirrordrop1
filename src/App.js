@@ -351,6 +351,67 @@ function Home() {
                         Acquire Yours
                       </a>
                     </div>
+
+                    {/* Framed Image - Added at the end */}
+                    <div className="mt-12 md:mt-16 flex justify-center w-full">
+                      <img
+                        src="/assets/visual.png"
+                        alt="Visual Representation"
+                        className="w-full h-full object-contain opacity-95 hover:opacity-100 transition-opacity duration-300 transform hover:scale-[1.01] transition-transform"
+                        style={{
+                          maxWidth: isMobile ? '90%' : '80%',
+                          filter: 'drop-shadow(0 8px 20px rgba(0, 0, 0, 0.7))'
+                        }}
+                        loading="eager"
+                      />
+                    </div>
+
+                    {/* Product Specifications */}
+                    <div className="mt-10 md:mt-14 mx-auto max-w-xl text-center">
+                      <div className="text-white/90 space-y-6">
+                        <div>
+                          <h3 className="text-xl md:text-2xl text-white tracking-wide mb-4">Format:</h3>
+                          <p className="text-base md:text-lg tracking-wide">Limited Edition Acrylic Mirror Print</p>
+                        </div>
+
+                        <div>
+                          <h3 className="text-xl md:text-2xl text-white tracking-wide mb-4">Dimensions:</h3>
+                          <p className="text-base md:text-lg tracking-wide">20x20in (50 x 50 cm)</p>
+                        </div>
+
+                        <div>
+                          <h3 className="text-xl md:text-2xl text-white tracking-wide mb-4">Material:</h3>
+                          <p className="text-base md:text-lg tracking-wide">Premium Top-Grade Acrylic<br />UV-protected, high-definition detail<br />Ready-to-hang mount included — no framing required.</p>
+                        </div>
+
+                        <div>
+                          <h3 className="text-xl md:text-2xl text-white tracking-wide mb-4">Edition Size:</h3>
+                          <p className="text-base md:text-lg tracking-wide">Strictly limited to 100 units only<br />No reprints. Once gone, the Mirror is gone forever.</p>
+                        </div>
+                      </div>
+
+                      <div className="mt-10 md:mt-14 text-white/90">
+                        <h3 className="text-xl md:text-2xl text-white tracking-wide mb-6">Included:</h3>
+                        <ul className="space-y-4 text-base md:text-lg tracking-wide">
+                          <li>"Letters to the Subconscious" 20x20in Mirror Artwork</li>
+                          <li>Hand-numbered & signed Manuscript (Certificate of Authenticity)</li>
+                          <li>Your own digital Keeper's Key which will unlock future quests to come.</li>
+                          <li>30 days of free access to Sanctuary,</li>
+                          <li>beginning the moment the doors are opened. A sacred space, reserved for those who remember.</li>
+                        </ul>
+                      </div>
+
+                      <div className="mt-10 md:mt-14">
+                        <a
+                          href="https://checkout.viulet.com/letters-mirror"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-block text-lg md:text-xl text-white tracking-wider border-b-2 border-white/40 pb-1 hover:border-white/80 transition-all duration-300 hover:text-white"
+                        >
+                          Acquire Yours
+                        </a>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
