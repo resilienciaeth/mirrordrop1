@@ -40,7 +40,8 @@ export function Password() {
                     <p className="text-xl text-white italic leading-relaxed">
                         "Essence calls, Seeker of Self,<br />
                         and forgotten truths await.<br />
-                        Enter the key, and step into the Mirror of Remembering."
+                        Enter the key, and step into<br />
+                        the Mirror of Remembering."
                     </p>
                 </div>
                 <form onSubmit={handleSubmit}>

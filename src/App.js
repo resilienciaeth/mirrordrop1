@@ -354,10 +354,13 @@ function Home() {
 
                     {/* Framed Image - Added at the end */}
                     <div className="mt-12 md:mt-16 flex justify-center w-full">
-                      <img
-                        src="/assets/visual.png"
-                        alt="Visual Representation"
+                      <video
+                        src="/assets/talk.mp4"
                         className="w-full h-full object-contain opacity-95 hover:opacity-100 transition-opacity duration-300 transform hover:scale-[1.01] transition-transform"
+                        controls
+                        controlsList="nodownload"
+                        playsInline
+                        preload="metadata"
                         style={{
                           maxWidth: isMobile ? '90%' : '80%',
                           filter: 'drop-shadow(0 8px 20px rgba(0, 0, 0, 0.7))'
@@ -411,6 +414,20 @@ function Home() {
                         >
                           Acquire Yours
                         </a>
+                      </div>
+
+                      {/* Visual image moved below the last text */}
+                      <div className="mt-12 md:mt-16 flex justify-center w-full">
+                        <img
+                          src="/assets/visual.png"
+                          alt="Visual Representation"
+                          className="w-full h-full object-contain opacity-95 hover:opacity-100 transition-opacity duration-300 transform hover:scale-[1.01] transition-transform"
+                          style={{
+                            maxWidth: isMobile ? '90%' : '80%',
+                            filter: 'drop-shadow(0 8px 20px rgba(0, 0, 0, 0.7))'
+                          }}
+                          loading="eager"
+                        />
                       </div>
                     </div>
                   </div>
