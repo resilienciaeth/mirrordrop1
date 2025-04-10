@@ -174,7 +174,7 @@ function Home() {
               </p>
 
               <p className="text-white/90 text-lg md:text-xl tracking-wider">
-                Shall we open the Seal?
+                Click to open the Seal
               </p>
 
               <div className="relative mt-4" ref={envelopeContainerRef}>
@@ -397,7 +397,8 @@ function Home() {
                           <li>Hand-numbered & signed Manuscript (Certificate of Authenticity)</li>
                           <li>Your own digital Keeper's Key which will unlock future quests to come.</li>
                           <li>30 days of free access to Sanctuary,</li>
-                          <li>beginning the moment the doors are opened. A sacred space, reserved for those who remember.</li>
+                          <li>beginning the moment the doors are opened.<br />
+                            A sacred space, reserved for those who remember.</li>
                         </ul>
                       </div>
 
