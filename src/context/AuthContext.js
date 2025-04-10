@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext(undefined);
 
-const CORRECT_PASSWORD = 'viulet';
+const CORRECT_PASSWORD = 'genesis';
 
 export function AuthProvider({ children }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
