@@ -38,7 +38,8 @@ export function Password() {
             <div className={`relative z-10 w-full max-w-lg px-6 md:px-8 transform transition-all duration-[1500ms] ease-in-out ${isFading ? 'translate-y-10 opacity-0' : 'translate-y-0 opacity-100'}`}>
                 <div className="mb-8 text-center">
                     <p className="text-xl text-white italic leading-relaxed">
-                        "Essence calls, Seeker of Self, and forgotten truths await.<br />
+                        "Essence calls, Seeker of Self,<br />
+                        and forgotten truths await.<br />
                         Enter the key, and step into the Mirror of Remembering."
                     </p>
                 </div>
