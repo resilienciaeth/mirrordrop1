@@ -2,13 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Load Garamond fonts */
+@font-face {
+  font-family: 'Garamond';
+  src: url('./assets/garamond.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Garamond';
+  src: url('./assets/garamond-italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Garamond', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Apply Garamond to all text elements */
+h1, h2, h3, h4, h5, h6, p, span, a, button, div {
+  font-family: 'Garamond', serif;
 }
 
 code {
