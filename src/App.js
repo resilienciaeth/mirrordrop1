@@ -451,7 +451,7 @@ function Home() {
           onClick={() => window.open('https://checkout.viulet.com/letters-mirror', '_blank')}
         >
           <span className="relative z-10 text-sm md:text-base font-light tracking-wide">
-            5/100 Mirrors <span className="underline underline-offset-4">Claimed</span>. Acquire <span className="underline underline-offset-4 font-medium">Yours</span>
+            6/100 Mirrors <span className="underline underline-offset-4">Claimed</span>. Acquire <span className="underline underline-offset-4 font-medium">Yours</span>
           </span>
           <svg
             className="w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1"
