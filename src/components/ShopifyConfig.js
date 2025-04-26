@@ -10,7 +10,7 @@ const ShopifyConfig = () => {
     useEffect(() => {
         // Get environment variables or use backups if in development mode
         const isDevMode = process.env.NODE_ENV === 'development';
-        const storeDomain = process.env.REACT_APP_SHOPIFY_STORE_DOMAIN || (isDevMode ? 'your-store.myshopify.com' : '');
+        const storeDomain = process.env.REACT_APP_SHOPIFY_STORE_DOMAIN || (isDevMode ? 'checkout.viulet.com' : '');
         const accessToken = process.env.REACT_APP_SHOPIFY_STOREFRONT_TOKEN || (isDevMode ? 'your-storefront-access-token' : '');
         const variantId = process.env.REACT_APP_SHOPIFY_PRODUCT_VARIANT_ID || (isDevMode ? '46438760612078' : '');
 
@@ -25,7 +25,7 @@ const ShopifyConfig = () => {
             console.warn(`Missing Shopify configuration: ${missingEnvVars.join(', ')}`);
             console.info(
                 'To enable Shopify integration, create a .env file in the project root with the following variables:\n' +
-                'REACT_APP_SHOPIFY_STORE_DOMAIN=your-store.myshopify.com\n' +
+                'REACT_APP_SHOPIFY_STORE_DOMAIN=checkout.viulet.com\n' +
                 'REACT_APP_SHOPIFY_STOREFRONT_TOKEN=your-storefront-access-token\n' +
                 'REACT_APP_SHOPIFY_PRODUCT_VARIANT_ID=46438760612078\n\n' +
                 'For testing purposes, edit these values directly in ShopifyConfig.js'

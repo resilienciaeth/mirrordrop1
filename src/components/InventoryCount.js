@@ -65,7 +65,7 @@ const InventoryCount = ({ className }) => {
         const intervalId = setInterval(fetchInventory, 5 * 60 * 1000); // every 5 minutes
 
         return () => clearInterval(intervalId);
-    }, [retryCount, soldCount]);
+    }, [retryCount]);
 
     // During loading, show last known value or placeholder
     if (loading && soldCount === null) {

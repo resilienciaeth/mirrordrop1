@@ -8,8 +8,8 @@ Create a `.env` file in the root directory of the project with the following var
 
 ```
 # Shopify Storefront API Credentials
-# Your Shopify store domain (just the subdomain part or full domain with .myshopify.com)
-REACT_APP_SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
+# Your Shopify store domain (can be your custom domain or myshopify domain)
+REACT_APP_SHOPIFY_STORE_DOMAIN=checkout.viulet.com
 
 # Your Shopify Storefront API access token (must have read_products and read_inventory scopes)
 REACT_APP_SHOPIFY_STOREFRONT_TOKEN=your-storefront-access-token
@@ -29,7 +29,7 @@ If you're having trouble with environment variables, you can directly modify the
 ```javascript
 const storeDomain =
   process.env.REACT_APP_SHOPIFY_STORE_DOMAIN ||
-  (isDevMode ? "your-actual-store.myshopify.com" : "");
+  (isDevMode ? "checkout.viulet.com" : "");
 const accessToken =
   process.env.REACT_APP_SHOPIFY_STOREFRONT_TOKEN ||
   (isDevMode ? "your-actual-storefront-token" : "");
@@ -38,37 +38,43 @@ const variantId =
   (isDevMode ? "46438760612078" : "");
 ```
 
-## Troubleshooting CORS Issues
+## CORS & API Calls
 
-If you're experiencing CORS errors:
+1.  **Development Mode (localhost)**:
 
-1. **Verify Domain Format**: Make sure your Shopify store domain is in the correct format and ends with `.myshopify.com`
+    - The application now attempts to fetch the **real inventory count** directly from Shopify.
+    - **Potential CORS Issue:** Because this is a direct browser call from `localhost` to your Shopify domain with a custom header, you might encounter CORS (Cross-Origin Resource Sharing) errors in the browser console.
+    - **Workaround:** If you see CORS errors related to the inventory fetch, the easiest solution _for development only_ is to use a browser extension that disables CORS checks (e.g., search for "Allow CORS" or similar in your browser's extension store). Remember to disable this extension when not needed.
 
-2. **Check Permissions**: Ensure your Storefront API token has at least `read_products` and `read_inventory` scopes
+2.  **Production Mode**:
+    - In a production build, the real API call is also attempted.
+    - **Server-Side Proxy Recommended:** For a robust and secure production setup, it's highly recommended to implement a server-side proxy (e.g., using Netlify/Vercel functions). Your React app calls your proxy, and your proxy securely calls Shopify. This avoids all browser CORS limitations.
 
-3. **For Local Development**:
+## Checkout Flow
 
-   - You can install a CORS browser extension to bypass CORS restrictions during development
-   - Or use a CORS proxy service
+1.  **In Development**:
 
-4. **Initial Setup for the Counter**:
-   - When you first set up your Shopify store, make sure the inventory for your product is set to 100 items
-   - As items are sold, the inventory will decrease and the counter will show "X/100 Mirrors Claimed"
+    - To ensure reliability, the checkout button uses a direct cart link, bypassing the API:
+    - `https://checkout.viulet.com/cart/46438760612078:1`
+
+2.  **In Production**:
+    - The app will attempt to use the Shopify Storefront API `cartCreate` mutation.
+    - If that fails (e.g., due to CORS or other errors), it will fall back to the direct cart URL as a safety measure.
+
+## Troubleshooting
+
+- **CORS Errors (Inventory):** Use a browser CORS extension during development if needed.
+- **CORS Errors (Production):** Implement a server-side proxy.
+- **Redirect Issues:** Ensure `checkout.viulet.com` is the **Primary Domain** in Shopify Settings > Domains.
+- **API Errors:** Double-check your Storefront Access Token and its permissions (`read_products`, `read_inventory`).
+
+## Initial Setup for the Counter
+
+- When you first set up your Shopify store, make sure the inventory for your product is set to 100 items.
+- As items are sold, the inventory will decrease, and the counter should now reflect this in both development (if CORS allows) and production.
 
 ## Getting Shopify Credentials
 
-1. **Shopify Store Domain**: This is your store's myshopify domain (e.g., `your-store.myshopify.com`)
-
-2. **Storefront API Token**:
-
-   - Go to your Shopify Admin
-   - Navigate to Apps > Develop apps > Create an app
-   - Name it "Mirror Drop" or something recognizable
-   - Go to "API credentials" and select the Storefront API
-   - Configure the scopes to include at least `read_products` and `read_inventory`
-   - Generate the storefront access token
-
-3. **Product Variant ID**:
-   - Your product variant ID is: `46438760612078`
-   - This raw ID will work fine as our code automatically converts it to the global ID format
-   - If you need to check other variants, you can find the variant ID in the URL when editing a product variant in Shopify Admin
+1.  **Shopify Store Domain**: `checkout.viulet.com`
+2.  **Storefront API Token**: (Ensure correct scopes: `read_products`, `read_inventory`)
+3.  **Product Variant ID**: `46438760612078`
