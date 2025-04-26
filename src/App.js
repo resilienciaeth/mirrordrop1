@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Password } from './pages/Password';
+import { createCheckoutAndRedirect, configureShopify } from './utils/shopify';
+import ShopifyConfig from './components/ShopifyConfig';
+import InventoryCount from './components/InventoryCount';
 
 function Home() {
   const [isVisible, setIsVisible] = useState(false);
@@ -343,9 +346,11 @@ function Home() {
 
                     <div className="mt-8 md:mt-12">
                       <a
-                        href="https://checkout.viulet.com/letters-mirror"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          createCheckoutAndRedirect();
+                        }}
                         className="inline-block text-lg md:text-xl text-white tracking-wider border-b-2 border-white/40 pb-1 hover:border-white/80 transition-all duration-300 hover:text-white"
                       >
                         Acquire Yours
@@ -407,9 +412,11 @@ function Home() {
 
                       <div className="mt-10 md:mt-14">
                         <a
-                          href="https://checkout.viulet.com/letters-mirror"
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            createCheckoutAndRedirect();
+                          }}
                           className="inline-block text-lg md:text-xl text-white tracking-wider border-b-2 border-white/40 pb-1 hover:border-white/80 transition-all duration-300 hover:text-white"
                         >
                           Acquire Yours
@@ -448,10 +455,10 @@ function Home() {
           style={{
             boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4)'
           }}
-          onClick={() => window.open('https://checkout.viulet.com/letters-mirror', '_blank')}
+          onClick={createCheckoutAndRedirect}
         >
           <span className="relative z-10 text-sm md:text-base font-light tracking-wide">
-            8/100 Mirrors <span className="underline underline-offset-4">Claimed</span>. Acquire <span className="underline underline-offset-4 font-medium">Yours</span>
+            <InventoryCount className="inline" /> Mirrors <span className="underline underline-offset-4">Claimed</span>. Acquire <span className="underline underline-offset-4 font-medium">Yours</span>
           </span>
           <svg
             className="w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1"
@@ -489,6 +496,7 @@ function PasswordWrapper() {
 function App() {
   return (
     <AuthProvider>
+      <ShopifyConfig />
       <Router>
         <Routes>
           {/* Password protection page */}
