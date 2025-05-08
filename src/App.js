@@ -500,7 +500,8 @@ function App() {
       <ShopifyConfig />
       <Router>
         <Routes>
-          {/* <Route path="/password" element={<PasswordWrapper />} /> */}
+          {/* Redirect /password to / */}
+          <Route path="/password" element={<Navigate to="/" replace />} />
           <Route
             path="/"
             element={
