@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { ProtectedRoute } from './components/ProtectedRoute';
-import { Password } from './pages/Password';
+// import { AuthProvider, useAuth } from './context/AuthContext'; // Commenting out
+// import { ProtectedRoute } from './components/ProtectedRoute'; // Commenting out
+// import { Password } from './pages/Password'; // Commenting out
 import { createCheckoutAndRedirect, configureShopify } from './utils/shopify';
 import ShopifyConfig from './components/ShopifyConfig';
 import InventoryCount from './components/InventoryCount';
@@ -483,40 +483,37 @@ function Home() {
 }
 
 // Wrapper for the password route that redirects to home if already authenticated
-function PasswordWrapper() {
-  const { isAuthenticated } = useAuth();
-
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-
-  return <Password />;
-}
+// function PasswordWrapper() { // Removing this function
+//   const { isAuthenticated } = useAuth();
+// 
+//   if (isAuthenticated) {
+//     return <Navigate to="/" replace />;
+//   }
+// 
+//   return <Password />;
+// }
 
 function App() {
   return (
-    <AuthProvider>
+    // <AuthProvider> // Commenting out
+    <>
       <ShopifyConfig />
       <Router>
         <Routes>
-          {/* Password protection page */}
-          <Route path="/password" element={<PasswordWrapper />} />
-
-          {/* Protected home route */}
+          {/* <Route path="/password" element={<PasswordWrapper />} /> */}
           <Route
             path="/"
             element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
+              // <ProtectedRoute>
+              <Home />
+              // </ProtectedRoute>
             }
           />
-
-          {/* Catch all other routes and redirect to password page */}
-          <Route path="*" element={<Navigate to="/password" replace />} />
+          {/* <Route path="*" element={<Navigate to="/password" replace />} /> */}
         </Routes>
       </Router>
-    </AuthProvider>
+    </>
+    // </AuthProvider> // Commenting out
   );
 }
 
