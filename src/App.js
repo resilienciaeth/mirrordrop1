@@ -9,13 +9,8 @@ import InventoryCount from './components/InventoryCount';
 
 function Home() {
   const [isVisible, setIsVisible] = useState(false);
-  const [contentUnlocked, setContentUnlocked] = useState(false);
-  const [showPlayButton, setShowPlayButton] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
-  const videoRef = useRef(null);
   const audioRef = useRef(null);
-  const contentRef = useRef(null); // Reference for the content section to scroll to
-  const envelopeContainerRef = useRef(null); // Reference for the envelope container
   const isMobile = window.innerWidth <= 768;
 
   // Fade in effect on mount with longer delay
@@ -25,42 +20,6 @@ function Home() {
     }, 300);
     return () => clearTimeout(timer);
   }, []);
-
-  // Control scrolling to allow seeing the full envelope animation
-  useEffect(() => {
-    if (contentUnlocked) return; // Don't limit scrolling after video completes
-
-    const handleScroll = () => {
-      if (!contentUnlocked && envelopeContainerRef.current) {
-        const rect = envelopeContainerRef.current.getBoundingClientRect();
-        const envelopeBottom = rect.bottom;
-        const viewportHeight = window.innerHeight;
-
-        // If user tries to scroll past the envelope, limit it
-        if (envelopeBottom < viewportHeight - 20) {
-          window.scrollTo({
-            top: window.scrollY - (viewportHeight - envelopeBottom - 20),
-            behavior: 'auto'
-          });
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [contentUnlocked]);
-
-  // Handle scroll locking during video playback
-  useEffect(() => {
-    // Allow limited scrolling to view the envelope, but lock during playback
-    document.body.style.overflow = (showPlayButton === false && !contentUnlocked) ? 'hidden' : 'auto';
-
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [contentUnlocked, showPlayButton]);
 
   // Handle audio play/pause
   const toggleAudio = () => {
@@ -92,70 +51,6 @@ function Home() {
     }
   }, []);
 
-  // Handle video end
-  useEffect(() => {
-    const video = videoRef.current;
-    if (video) {
-      const handleVideoEnd = () => {
-        setContentUnlocked(true);
-        document.body.style.overflow = 'auto'; // Re-enable main scroll
-
-        // Add a slight delay before scrolling to ensure content is rendered
-        setTimeout(() => {
-          if (contentRef.current) {
-            contentRef.current.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
-          }
-        }, 500);
-      };
-
-      // Ensure this runs after the video element is fully set up
-      video.addEventListener('ended', handleVideoEnd);
-
-      return () => {
-        video.removeEventListener('ended', handleVideoEnd);
-      };
-    }
-  }, []);
-
-  // Handle video playback and completion
-  const handleVideoPlay = () => {
-    const video = videoRef.current;
-    if (video) {
-      setShowPlayButton(false);
-
-      // Lock scrolling when the video starts playing
-      document.body.style.overflow = 'hidden';
-
-      // Make sure video has proper event listeners before playing
-      video.addEventListener('ended', () => {
-        setContentUnlocked(true);
-        document.body.style.overflow = 'auto';
-
-        // Add a slight delay before scrolling to ensure content is rendered
-        setTimeout(() => {
-          if (contentRef.current) {
-            contentRef.current.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
-          }
-        }, 500);
-      }, { once: true });
-
-      // Play the video
-      video.play().catch(err => {
-        console.error('Error playing video:', err);
-        // If autoplay is blocked, show a message and restore scrolling
-        alert('Please click the video to play it manually.');
-        document.body.style.overflow = 'auto';
-        setShowPlayButton(true);
-      });
-    }
-  };
-
   return (
     <>
       <div className="min-h-screen bg-black" style={{ fontFamily: 'Garamond, serif' }}>
@@ -176,14 +71,9 @@ function Home() {
                 Seeker of Self.
               </p>
 
-              <p className="text-white/90 text-lg md:text-xl tracking-wider">
-                Click to open the Seal
-              </p>
-
-              <div className="relative mt-4" ref={envelopeContainerRef}>
+              <div className="relative mt-4">
                 <video
-                  ref={videoRef}
-                  className={`mx-auto w-auto h-auto max-w-full max-h-[50vh] cursor-pointer transition-all duration-300 ${showPlayButton && !contentUnlocked ? 'hover:scale-[1.03] hover:brightness-125 hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.25)]' : ''}`}
+                  className="mx-auto w-auto h-auto max-w-full max-h-[50vh]"
                   style={{
                     maxHeight: isMobile ? '65vh' : '50vh',
                     width: isMobile ? '100%' : 'auto'
@@ -192,30 +82,14 @@ function Home() {
                   playsInline
                   src="/assets/animation-envelope.mp4"
                   poster="/assets/envelope-frames/frame-001.jpg"
-                  onClick={handleVideoPlay}
+                  autoPlay
+                  muted
+                  loop
                 />
-                {/* Envelope hover glow effect */}
-                {showPlayButton && !contentUnlocked && (
-                  <div
-                    className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/0 to-white/5 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                    style={{
-                      borderRadius: '4px',
-                      mixBlendMode: 'overlay'
-                    }}
-                  />
-                )}
               </div>
 
-              {/* Invisible scroll barrier before content is unlocked */}
-              {!contentUnlocked && (
-                <div className="absolute bottom-0 left-0 w-full h-20 bg-black" />
-              )}
-
-              {/* Content Only visible after video ends */}
-              <div
-                ref={contentRef}
-                className={`transition-opacity duration-1000 ${contentUnlocked ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-              >
+              {/* Content */}
+              <div className="transition-opacity duration-1000 opacity-100">
                 {/* Creation Video and Text */}
                 <div className="mt-8 md:mt-12 mb-12 md:mb-16">
                   <p className="text-base md:text-xl text-white/90 leading-relaxed tracking-wider mb-8 md:mb-10">
@@ -445,11 +319,11 @@ function Home() {
         </div>
       </div>
 
-      {/* Fixed Button */}
+      {/* Fixed Button - Made more prominent on mobile */}
       <div className="fixed bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] md:w-auto">
         <button
-          className="group relative w-full md:w-auto px-4 md:px-8 py-3 md:py-4 bg-black/80 backdrop-blur-md rounded-full border border-white/10 
-                     text-white hover:bg-black/90 transition-all duration-300 cursor-pointer
+          className="group relative w-full md:w-auto px-6 md:px-8 py-4 md:py-4 bg-black/90 backdrop-blur-md rounded-full border border-white/20 
+                     text-white hover:bg-black/95 transition-all duration-300 cursor-pointer
                      flex items-center justify-center md:justify-start gap-2
                      shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
           style={{
@@ -457,11 +331,11 @@ function Home() {
           }}
           onClick={createCheckoutAndRedirect}
         >
-          <span className="relative z-10 text-sm md:text-base font-light tracking-wide">
-            <InventoryCount className="inline" /> Mirrors <span className="underline underline-offset-4">Claimed</span>. Acquire <span className="underline underline-offset-4 font-medium">Yours</span>
+          <span className="relative z-10 text-base md:text-base font-medium tracking-wide">
+            <InventoryCount className="inline" /> Mirrors <span className="underline underline-offset-4">Claimed</span>. Acquire <span className="underline underline-offset-4 font-semibold">Yours</span>
           </span>
           <svg
-            className="w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1"
+            className="w-5 h-5 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -475,7 +349,7 @@ function Home() {
           </svg>
 
           {/* Glow effect */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </button>
       </div>
     </>
