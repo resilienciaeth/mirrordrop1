@@ -78,13 +78,14 @@ function Home() {
                     maxHeight: isMobile ? '65vh' : '50vh',
                     width: isMobile ? '100%' : 'auto'
                   }}
-                  preload="auto"
+                  preload="none"
                   playsInline
-                  src="/assets/animation-envelope.mp4"
+                  src="/assets/animation-envelope-compressed.mp4"
                   poster="/assets/envelope-frames/frame-001.jpg"
                   autoPlay
                   muted
                   loop
+                  loading="lazy"
                 />
               </div>
 
@@ -109,10 +110,12 @@ function Home() {
                     <video
                       className="w-full rounded-sm shadow-[0_8px_30px_rgba(0,0,0,0.3)]"
                       playsInline
-                      src="/assets/creation.mp4"
+                      src="/assets/creation-compressed.mp4"
                       controls
                       controlsList="nodownload"
-                      preload="metadata"
+                      preload="none"
+                      loading="lazy"
+                      poster="/assets/poster1.png"
                     />
                   </div>
 
@@ -130,7 +133,7 @@ function Home() {
                   </div>
                 </div>
 
-                <audio ref={audioRef} src="/assets/audio.wav" preload="auto" />
+                <audio ref={audioRef} src="/assets/audio.mp3" preload="none" />
 
                 <div className="flex items-center justify-center mt-6 mb-2">
                   <button
@@ -151,12 +154,13 @@ function Home() {
                 {/* Manuscript Image */}
                 <div className="mt-8 md:mt-16 flex justify-center w-full">
                   <img
-                    src="/assets/manuscript.png"
+                    src="/assets/manuscript.webp"
                     alt="Handwritten Manuscript"
                     className="w-full md:w-auto max-h-[400px] md:max-h-[600px] object-contain opacity-95 hover:opacity-100 transition-opacity duration-300 transform hover:scale-[1.01] transition-transform"
                     style={{
                       filter: 'drop-shadow(0 6px 15px rgba(0, 0, 0, 0.6))'
                     }}
+                    loading="lazy"
                   />
                 </div>
 
@@ -196,7 +200,7 @@ function Home() {
                         maxHeight: isMobile ? '65vh' : '80vh',
                         filter: 'drop-shadow(0 6px 15px rgba(0, 0, 0, 0.6))'
                       }}
-                      loading="eager"
+                      loading="lazy"
                     />
                   </div>
 
@@ -234,17 +238,18 @@ function Home() {
                     {/* Framed Image - Added at the end */}
                     <div className="mt-12 md:mt-16 flex justify-center w-full">
                       <video
-                        src="/assets/talk.mp4"
+                        src="/assets/talk-compressed.mp4"
                         className="w-full h-full object-contain opacity-95 hover:opacity-100 transition-opacity duration-300 transform hover:scale-[1.01] transition-transform"
                         controls
                         controlsList="nodownload"
                         playsInline
-                        preload="metadata"
+                        preload="none"
                         style={{
                           maxWidth: isMobile ? '90%' : '80%',
                           filter: 'drop-shadow(0 8px 20px rgba(0, 0, 0, 0.7))'
                         }}
-                        loading="eager"
+                        loading="lazy"
+                        poster="/assets/poster2.png"
                       />
                     </div>
 
@@ -300,14 +305,14 @@ function Home() {
                       {/* Visual image moved below the last text */}
                       <div className="mt-12 md:mt-16 flex justify-center w-full">
                         <img
-                          src="/assets/visual.png"
+                          src="/assets/visual.webp"
                           alt="Visual Representation"
                           className="w-full h-full object-contain opacity-95 hover:opacity-100 transition-opacity duration-300 transform hover:scale-[1.01] transition-transform"
                           style={{
                             maxWidth: isMobile ? '90%' : '80%',
                             filter: 'drop-shadow(0 8px 20px rgba(0, 0, 0, 0.7))'
                           }}
-                          loading="eager"
+                          loading="lazy"
                         />
                       </div>
                     </div>
