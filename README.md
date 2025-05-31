@@ -110,3 +110,4 @@ When a "Buy Now" button is clicked:
 3. Shopify handles the rest of the checkout process (payment, shipping, etc.)
 
 No cart page or quantity selection is needed - it's a direct "Buy Now" flow with quantity of 1.
+# mirror-letters
